@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Conta a Pagar{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">{% if form.instance.pk %}Editar Conta{% else %}Nova Conta{% endif %}</h4>
+            </div>
+            <div class="card-body">
+                {% if grupo %}
+                <div class="alert alert-info py-2">
+                    Adicionando conta ao espaço: <strong>{{ grupo.nome }}</strong>
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Se o grupo já estiver definido no contexto, podemos esconder o campo ou deixá-lo visível mas desabilitado se quiséssemos. 
+                         Como estamos usando o form padrão, ele vai renderizar o select. 
+                         Se o form foi inicializado com o grupo, ele virá selecionado. -->
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3 {% if grupo %}d-none{% endif %}">
+                            <label class="form-label">Grupo</label>
+                            {{ form.grupo }}
+                        </div>
+
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label">Descrição</label>
+                            {{ form.descricao }}
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Valor (R$)</label>
+                            {{ form.valor }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Data de Vencimento</label>
+                            {{ form.data_vencimento }}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="form-check mb-3">
+                        {{ form.pago }}
+                        <label class="form-check-label" for="{{ form.pago.id_for_label }}">
+                            Já foi pago?
+                        </label>
+                    </div>
+
+                    <div class="mb-3" id="div-data-pagamento">
+                        <label class="form-label">Data do Pagamento</label>
+                        {{ form.data_pagamento }}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                        <button type="submit" class="btn btn-success px-4">Salvar Conta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script simples para mostrar/ocultar data de pagamento dependendo do checkbox Pago
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkPago = document.getElementById('{{ form.pago.id_for_label }}');
+        const divDataPagamento = document.getElementById('div-data-pagamento');
+        
+        function toggleDataPagamento() {
+            if (checkPago.checked) {
+                divDataPagamento.style.display = 'block';
+            } else {
+                divDataPagamento.style.display = 'none';
+                // Opcional: limpar o campo data
+            }
+        }
+
+        if(checkPago) {
+            checkPago.addEventListener('change', toggleDataPagamento);
+            toggleDataPagamento(); // Rodar no load
+        }
+    });
+</script>
+{% endblock %}

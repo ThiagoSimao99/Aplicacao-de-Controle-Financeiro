@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Categoria{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Confirmar Exclusão</h4>
+            </div>
+            <div class="card-body text-center">
+                <p>Tem certeza que deseja excluir a categoria <strong>"{{ object }}"</strong>?</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+                    <a href="{% url 'categoria-list' %}" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

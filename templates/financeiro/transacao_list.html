@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Transações{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Transações</h1>
+    <a href="{% url 'transacao-create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Nova Transação</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Conta</th>
+                    <th>Valor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transacao in transacoes %}
+                <tr>
+                    <td>{{ transacao.data|date:"d/m/Y" }}</td>
+                    <td>{{ transacao.descricao }}</td>
+                    <td>{{ transacao.categoria }}</td>
+                    <td>{{ transacao.conta }}</td>
+                    <td class="{% if transacao.tipo == 'receita' %}text-success{% else %}text-danger{% endif %} fw-bold">
+                        {% if transacao.tipo == 'receita' %}+{% else %}-{% endif %} R$ {{ transacao.valor }}
+                    </td>
+                    <td>
+                        <a href="{% url 'transacao-update' transacao.pk %}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'transacao-delete' transacao.pk %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Nenhuma transação cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

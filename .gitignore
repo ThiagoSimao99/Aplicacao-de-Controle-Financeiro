@@ -1,0 +1,26 @@
+# Python / Django
+*.py[cod]
+*$py.class
+__pycache__/
+*.so
+
+# Ambientes Virtuais (Ajuste conforme o nome da sua pasta)
+env/
+venv/
+.env
+.venv/
+
+# Variáveis de ambiente e segredos
+.env
+.env.local
+
+# Banco de dados (se for usar SQLite local)
+db.sqlite3
+*.sqlite3
+
+# Logs
+*.log
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db

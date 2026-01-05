@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ grupo.nome }} - Contas{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'grupo-list' %}">Meus Espaços</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ grupo.nome }}</li>
+  </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">{{ grupo.nome }}</h1>
+        <small class="text-muted">{{ grupo.descricao }}</small>
+    </div>
+    <div>
+        <a href="{% url 'grupo-update' grupo.pk %}" class="btn btn-sm btn-outline-secondary"><i class="fas fa-cog"></i> Configurar</a>
+    </div>
+</div>
+
+<!-- Navegação de Mês -->
+<div class="card mb-4 bg-light">
+    <div class="card-body d-flex justify-content-between align-items-center py-2">
+        <a href="?mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-chevron-left"></i> Anterior
+        </a>
+        <h4 class="mb-0 text-uppercase fw-bold">{{ data_atual|date:"F Y" }}</h4>
+        <a href="?mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn btn-outline-secondary btn-sm">
+            Próximo <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Resumo do Mês -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Previsto</div>
+            <div class="card-body">
+                <h3 class="card-title">R$ {{ total_previsto }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Total Pago</div>
+            <div class="card-body">
+                <h3 class="card-title">R$ {{ total_pago }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header text-dark">Total Pendente</div>
+            <div class="card-body text-dark">
+                <h3 class="card-title">R$ {{ total_pendente }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Contas -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center bg-white">
+        <h5 class="mb-0">Contas do Mês</h5>
+        <a href="{% url 'contapagar-create' grupo_id=grupo.pk %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nova Conta
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width: 50px;">Status</th>
+                        <th>Vencimento</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conta in contas %}
+                    <tr class="{% if conta.pago %}table-success{% elif conta.data_vencimento < today and not conta.pago %}table-danger{% endif %}">
+                        <td class="text-center">
+                            {% if conta.pago %}
+                                <i class="fas fa-check-circle text-success fa-lg"></i>
+                            {% else %}
+                                <i class="far fa-circle text-muted fa-lg"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ conta.data_vencimento|date:"d/m/Y" }}</td>
+                        <td class="fw-bold">{{ conta.descricao }}</td>
+                        <td>R$ {{ conta.valor }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'contapagar-update' conta.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="{% url 'contapagar-delete' conta.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            Nenhuma conta para este mês.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

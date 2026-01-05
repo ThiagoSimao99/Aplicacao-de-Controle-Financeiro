@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Meus Espaços{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Meus Espaços</h1>
+    <a href="{% url 'grupo-create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Novo Espaço</a>
+</div>
+
+<div class="row">
+    {% for grupo in grupos %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ grupo.nome }}</h5>
+                <p class="card-text text-muted">{{ grupo.descricao|default:"Sem descrição" }}</p>
+                <a href="{% url 'grupo-detail' grupo.pk %}" class="btn btn-outline-primary stretched-link">Abrir Espaço</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">Nenhum espaço de contas criado.</p>
+        <a href="{% url 'grupo-create' %}" class="btn btn-primary">Começar agora</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

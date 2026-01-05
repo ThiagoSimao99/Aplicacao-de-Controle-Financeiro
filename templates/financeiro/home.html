@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Total Receitas</div>
+            <div class="card-body">
+                <h5 class="card-title">R$ {{ total_receitas|default:"0.00" }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Total Despesas</div>
+            <div class="card-body">
+                <h5 class="card-title">R$ {{ total_despesas|default:"0.00" }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white {% if saldo_geral >= 0 %}bg-primary{% else %}bg-warning{% endif %} mb-3">
+            <div class="card-header">Saldo Geral</div>
+            <div class="card-body">
+                <h5 class="card-title">R$ {{ saldo_geral|default:"0.00" }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Ações Rápidas
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a href="{% url 'transacao-create' %}" class="btn btn-primary">Nova Transação</a>
+                <a href="{% url 'conta-create' %}" class="btn btn-secondary">Nova Conta</a>
+                <a href="{% url 'categoria-create' %}" class="btn btn-info text-white">Nova Categoria</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Resumo
+            </div>
+            <div class="card-body">
+                <p>Bem-vindo ao seu gestor financeiro. Utilize o menu acima ou os botões ao lado para começar.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
