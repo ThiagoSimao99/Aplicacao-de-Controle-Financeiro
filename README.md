@@ -56,7 +56,7 @@ Siga estes passos para rodar a aplicação em sua máquina local.
 3. **Instale as dependências**:
 
    ```bash
-   pip install django
+   pip install -r requirements.txt
    ```
 
 4. **Prepare o Banco de Dados**:
