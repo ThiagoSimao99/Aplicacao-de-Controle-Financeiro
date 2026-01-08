@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from datetime import date, timedelta
 import json
@@ -9,29 +10,29 @@ from .forms import GrupoForm, ContaPagarForm
 
 # --- GRUPOS ---
 
-class GrupoListView(ListView):
+class GrupoListView(LoginRequiredMixin, ListView):
     model = Grupo
     template_name = 'financeiro/grupo_list.html'
     context_object_name = 'grupos'
 
-class GrupoCreateView(CreateView):
+class GrupoCreateView(LoginRequiredMixin, CreateView):
     model = Grupo
     form_class = GrupoForm
     template_name = 'financeiro/grupo_form.html'
     success_url = reverse_lazy('grupo-list')
 
-class GrupoUpdateView(UpdateView):
+class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     model = Grupo
     form_class = GrupoForm
     template_name = 'financeiro/grupo_form.html'
     success_url = reverse_lazy('grupo-list')
 
-class GrupoDeleteView(DeleteView):
+class GrupoDeleteView(LoginRequiredMixin, DeleteView):
     model = Grupo
     template_name = 'financeiro/grupo_confirm_delete.html'
     success_url = reverse_lazy('grupo-list')
 
-class GrupoDetailView(DetailView):
+class GrupoDetailView(LoginRequiredMixin, DetailView):
     model = Grupo
     template_name = 'financeiro/grupo_detail.html'
     context_object_name = 'grupo'
@@ -125,7 +126,7 @@ class GrupoDetailView(DetailView):
 
 # --- CONTAS A PAGAR ---
 
-class ContaPagarCreateView(CreateView):
+class ContaPagarCreateView(LoginRequiredMixin, CreateView):
     model = ContaPagar
     form_class = ContaPagarForm
     template_name = 'financeiro/contapagar_form.html'
@@ -148,7 +149,7 @@ class ContaPagarCreateView(CreateView):
     def get_success_url(self):
         return reverse('grupo-detail', kwargs={'pk': self.object.grupo.pk})
 
-class ContaPagarUpdateView(UpdateView):
+class ContaPagarUpdateView(LoginRequiredMixin, UpdateView):
     model = ContaPagar
     form_class = ContaPagarForm
     template_name = 'financeiro/contapagar_form.html'
@@ -156,7 +157,7 @@ class ContaPagarUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('grupo-detail', kwargs={'pk': self.object.grupo.pk})
 
-class ContaPagarDeleteView(DeleteView):
+class ContaPagarDeleteView(LoginRequiredMixin, DeleteView):
     model = ContaPagar
     template_name = 'financeiro/contapagar_confirm_delete.html'
     

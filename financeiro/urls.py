@@ -3,8 +3,14 @@ from .views import (
     GrupoListView, GrupoCreateView, GrupoUpdateView, GrupoDeleteView, GrupoDetailView,
     ContaPagarCreateView, ContaPagarUpdateView, ContaPagarDeleteView
 )
+from .views_auth import CustomLoginView, RegisterView, logout_view
 
 urlpatterns = [
+    # Autenticação
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('cadastro/', RegisterView.as_view(), name='register'),
+    
     # Grupos (Espaços)
     path('', GrupoListView.as_view(), name='grupo-list'),
     path('grupo/novo/', GrupoCreateView.as_view(), name='grupo-create'),
