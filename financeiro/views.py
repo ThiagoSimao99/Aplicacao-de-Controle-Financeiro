@@ -3,6 +3,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.db.models import Sum
 from datetime import date, timedelta
+import json
 from .models import Grupo, ContaPagar
 from .forms import GrupoForm, ContaPagarForm
 
@@ -73,6 +74,35 @@ class GrupoDetailView(DetailView):
         total_pago = contas.filter(pago=True).aggregate(Sum('valor'))['valor__sum'] or 0
         total_pendente = total_previsto - total_pago
 
+        # Dados para gráfico de histórico (últimos 6 meses)
+        historico_labels = []
+        historico_previsto = []
+        historico_pago = []
+        
+        MESES_PT = ['', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        
+        for i in range(5, -1, -1):  # 5 a 0 (6 meses, do mais antigo ao atual)
+            # Calcular mês/ano para cada iteração
+            m = mes - i
+            a = ano
+            while m <= 0:
+                m += 12
+                a -= 1
+            
+            historico_labels.append(f"{MESES_PT[m]}/{a}")
+            
+            # Buscar totais deste mês
+            contas_mes = self.object.contas.filter(
+                data_vencimento__month=m,
+                data_vencimento__year=a
+            )
+            prev = contas_mes.aggregate(Sum('valor'))['valor__sum'] or 0
+            pag = contas_mes.filter(pago=True).aggregate(Sum('valor'))['valor__sum'] or 0
+            
+            historico_previsto.append(float(prev))
+            historico_pago.append(float(pag))
+
         context.update({
             'contas': contas,
             'mes_atual': mes,
@@ -86,6 +116,10 @@ class GrupoDetailView(DetailView):
             'total_pago': total_pago,
             'total_pendente': total_pendente,
             'today': date.today(),
+            # Dados para gráficos (JSON)
+            'chart_historico_labels': json.dumps(historico_labels),
+            'chart_historico_previsto': json.dumps(historico_previsto),
+            'chart_historico_pago': json.dumps(historico_pago),
         })
         return context
 
