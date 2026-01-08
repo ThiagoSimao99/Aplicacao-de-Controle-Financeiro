@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-bs-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,9 +17,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-      body {
-        background-color: #f8f9fa;
-      }
+      /* === BASE STYLES === */
       .navbar-brand {
         font-weight: bold;
       }
@@ -30,7 +28,256 @@
       .btn-action {
         margin-right: 5px;
       }
+      
+      /* === THEME TOGGLE BUTTON === */
+      .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem 0.75rem;
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+        color: #ffc107 !important; /* Amarelo - sempre visível */
+      }
+      .theme-toggle:hover {
+        transform: scale(1.2);
+      }
+      
+      /* === SMOOTH TRANSITIONS === */
+      html {
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      
+      /* === LIGHT MODE - PALETA PREMIUM === */
+      [data-bs-theme="light"] {
+        --my-bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --my-card-bg: #ffffff;
+        --my-text-muted: #6c757d;
+      }
+      
+      [data-bs-theme="light"] body {
+        background: linear-gradient(180deg, #f0f2f5 0%, #e8eaef 100%);
+      }
+      
+      [data-bs-theme="light"] .navbar {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        border-bottom: none;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      }
+      
+      [data-bs-theme="light"] .card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fc 100%);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
+      }
+      
+      [data-bs-theme="light"] .card:hover {
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        transition: box-shadow 0.3s ease;
+      }
+      
+      [data-bs-theme="light"] .card-header {
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%) !important;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+      }
+      
+      [data-bs-theme="light"] .table {
+        --bs-table-striped-bg: rgba(102, 126, 234, 0.03);
+        --bs-table-hover-bg: rgba(102, 126, 234, 0.08);
+      }
+      
+      [data-bs-theme="light"] .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+      
+      [data-bs-theme="light"] .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        transform: translateY(-1px);
+      }
+      
+      [data-bs-theme="light"] .btn-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+      }
+      
+      [data-bs-theme="light"] .btn-success:hover {
+        box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+        transform: translateY(-1px);
+      }
+      
+      [data-bs-theme="light"] .btn-danger {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(214, 48, 49, 0.3);
+      }
+      
+      [data-bs-theme="light"] .btn-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+      }
+      
+      [data-bs-theme="light"] .btn-outline-primary {
+        border: 2px solid #667eea;
+        color: #667eea;
+        background: transparent;
+      }
+      
+      [data-bs-theme="light"] .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+      }
+      
+      [data-bs-theme="light"] .form-control:focus,
+      [data-bs-theme="light"] .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+      
+      [data-bs-theme="light"] .badge.bg-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !important;
+      }
+      
+      [data-bs-theme="light"] .badge.bg-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%) !important;
+      }
+      
+      [data-bs-theme="light"] .badge.bg-danger {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%) !important;
+      }
+      
+      [data-bs-theme="light"] .badge.bg-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      }
+      
+      /* === DARK MODE - PALETA PREMIUM === */
+      [data-bs-theme="dark"] {
+        --bs-body-bg: #0f0f1a;
+        --bs-body-color: #e4e4e7;
+        --my-bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        --my-card-bg: #1a1a2e;
+        --my-text-muted: #a0a0a8;
+      }
+      
+      [data-bs-theme="dark"] body {
+        background: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%);
+      }
+      
+      [data-bs-theme="dark"] .navbar {
+        background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%) !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      
+      [data-bs-theme="dark"] .card {
+        background: linear-gradient(145deg, #1a1a2e 0%, #232342 100%);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      
+      [data-bs-theme="dark"] .card-header {
+        background: rgba(255,255,255,0.05) !important;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      
+      [data-bs-theme="dark"] .table {
+        --bs-table-bg: transparent;
+        --bs-table-striped-bg: rgba(255,255,255,0.03);
+        --bs-table-hover-bg: rgba(255,255,255,0.05);
+      }
+      
+      [data-bs-theme="dark"] .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+      
+      [data-bs-theme="dark"] .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+      
+      [data-bs-theme="dark"] .btn-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+      }
+      
+      [data-bs-theme="dark"] .btn-danger {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        border: none;
+      }
+      
+      [data-bs-theme="dark"] .btn-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+        border: none;
+        color: #1a1a2e;
+      }
+      
+      [data-bs-theme="dark"] .btn-outline-primary {
+        border-color: #667eea;
+        color: #667eea;
+      }
+      
+      [data-bs-theme="dark"] .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+      }
+      
+      [data-bs-theme="dark"] .form-control,
+      [data-bs-theme="dark"] .form-select {
+        background-color: #16213e;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #e4e4e7;
+      }
+      
+      [data-bs-theme="dark"] .form-control:focus,
+      [data-bs-theme="dark"] .form-select:focus {
+        background-color: #1a1a2e;
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+      }
+      
+      [data-bs-theme="dark"] .alert-info {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        color: #a0a0ff;
+      }
+      
+      [data-bs-theme="dark"] .text-muted {
+        color: var(--my-text-muted) !important;
+      }
+      
+      [data-bs-theme="dark"] .badge.bg-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !important;
+      }
+      
+      [data-bs-theme="dark"] .badge.bg-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%) !important;
+        color: #1a1a2e !important;
+      }
+      
+      [data-bs-theme="dark"] .badge.bg-danger {
+        background: linear-gradient(135deg, #e17055 0%, #d63031 100%) !important;
+      }
+      
+      /* Accent glow effect for dark mode */
+      [data-bs-theme="dark"] .card:hover {
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+        transition: box-shadow 0.3s ease;
+      }
     </style>
+    <!-- Theme Script (runs before page render to prevent flash) -->
+    <script>
+      (function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+      })();
+    </script>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -53,7 +300,12 @@
               <a class="nav-link" href="{% url 'grupo-list' %}">Meus Espaços</a>
             </li>
           </ul>
-          <ul class="navbar-nav">
+          <ul class="navbar-nav align-items-center">
+            <li class="nav-item">
+              <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro">
+                <i class="fas fa-moon" id="themeIcon"></i>
+              </button>
+            </li>
             <li class="nav-item">
               <span class="nav-link text-light">
                 <i class="fas fa-user-circle me-1"></i>{{ user.username }}
@@ -66,7 +318,12 @@
             </li>
           </ul>
           {% else %}
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item">
+              <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro">
+                <i class="fas fa-moon" id="themeIcon"></i>
+              </button>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">
                 <i class="fas fa-sign-in-alt me-1"></i>Entrar
@@ -107,6 +364,37 @@
     ></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+      (function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        function updateIcon() {
+          const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+          if (currentTheme === 'dark') {
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+          } else {
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+          }
+        }
+        
+        // Set initial icon
+        updateIcon();
+        
+        themeToggle.addEventListener('click', function() {
+          const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          
+          document.documentElement.setAttribute('data-bs-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+          updateIcon();
+        });
+      })();
+    </script>
     {% block extra_js %}{% endblock %}
   </body>
 </html>
