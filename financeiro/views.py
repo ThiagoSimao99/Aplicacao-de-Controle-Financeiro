@@ -15,11 +15,20 @@ class GrupoListView(LoginRequiredMixin, ListView):
     template_name = 'financeiro/grupo_list.html'
     context_object_name = 'grupos'
 
+    def get_queryset(self):
+        """Retorna apenas grupos do usuário logado."""
+        return Grupo.objects.filter(usuario=self.request.user)
+
 class GrupoCreateView(LoginRequiredMixin, CreateView):
     model = Grupo
     form_class = GrupoForm
     template_name = 'financeiro/grupo_form.html'
     success_url = reverse_lazy('grupo-list')
+
+    def form_valid(self, form):
+        """Associa automaticamente o grupo ao usuário logado."""
+        form.instance.usuario = self.request.user
+        return super().form_valid(form)
 
 class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     model = Grupo
@@ -27,15 +36,27 @@ class GrupoUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'financeiro/grupo_form.html'
     success_url = reverse_lazy('grupo-list')
 
+    def get_queryset(self):
+        """Limita edição apenas aos grupos do usuário logado."""
+        return Grupo.objects.filter(usuario=self.request.user)
+
 class GrupoDeleteView(LoginRequiredMixin, DeleteView):
     model = Grupo
     template_name = 'financeiro/grupo_confirm_delete.html'
     success_url = reverse_lazy('grupo-list')
 
+    def get_queryset(self):
+        """Limita exclusão apenas aos grupos do usuário logado."""
+        return Grupo.objects.filter(usuario=self.request.user)
+
 class GrupoDetailView(LoginRequiredMixin, DetailView):
     model = Grupo
     template_name = 'financeiro/grupo_detail.html'
     context_object_name = 'grupo'
+
+    def get_queryset(self):
+        """Limita visualização apenas aos grupos do usuário logado."""
+        return Grupo.objects.filter(usuario=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -133,17 +154,17 @@ class ContaPagarCreateView(LoginRequiredMixin, CreateView):
     
     def get_initial(self):
         initial = super().get_initial()
-        # Preenche o grupo se passado na URL
+        # Preenche o grupo se passado na URL (verifica se pertence ao usuário)
         grupo_id = self.kwargs.get('grupo_id')
         if grupo_id:
-            initial['grupo'] = get_object_or_404(Grupo, pk=grupo_id)
+            initial['grupo'] = get_object_or_404(Grupo, pk=grupo_id, usuario=self.request.user)
         return initial
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         grupo_id = self.kwargs.get('grupo_id')
         if grupo_id:
-            context['grupo'] = get_object_or_404(Grupo, pk=grupo_id)
+            context['grupo'] = get_object_or_404(Grupo, pk=grupo_id, usuario=self.request.user)
         return context
 
     def get_success_url(self):
@@ -154,12 +175,20 @@ class ContaPagarUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ContaPagarForm
     template_name = 'financeiro/contapagar_form.html'
 
+    def get_queryset(self):
+        """Limita edição às contas de grupos do usuário logado."""
+        return ContaPagar.objects.filter(grupo__usuario=self.request.user)
+
     def get_success_url(self):
         return reverse('grupo-detail', kwargs={'pk': self.object.grupo.pk})
 
 class ContaPagarDeleteView(LoginRequiredMixin, DeleteView):
     model = ContaPagar
     template_name = 'financeiro/contapagar_confirm_delete.html'
-    
+
+    def get_queryset(self):
+        """Limita exclusão às contas de grupos do usuário logado."""
+        return ContaPagar.objects.filter(grupo__usuario=self.request.user)
+
     def get_success_url(self):
         return reverse('grupo-detail', kwargs={'pk': self.object.grupo.pk})

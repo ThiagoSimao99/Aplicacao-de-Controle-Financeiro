@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class Grupo(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grupos')
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True, null=True)
     criado_em = models.DateTimeField(auto_now_add=True)
