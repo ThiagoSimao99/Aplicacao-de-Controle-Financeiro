@@ -27,7 +27,27 @@
         <a href="?mes={{ mes_anterior }}&ano={{ ano_anterior }}" class="btn btn-outline-secondary btn-sm">
             <i class="fas fa-chevron-left"></i> Anterior
         </a>
-        <h4 class="mb-0 text-uppercase fw-bold">{{ data_atual|date:"F Y" }}</h4>
+        <div class="d-flex align-items-center gap-3">
+            <h4 class="mb-0 text-uppercase fw-bold">{{ data_atual|date:"F Y" }}</h4>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" 
+                        id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'exportar-pdf' grupo.pk %}?mes={{ mes_atual }}&ano={{ ano_atual }}">
+                            <i class="fas fa-file-pdf text-danger me-2"></i> PDF
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'exportar-excel' grupo.pk %}?mes={{ mes_atual }}&ano={{ ano_atual }}">
+                            <i class="fas fa-file-excel text-success me-2"></i> Excel
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <a href="?mes={{ mes_proximo }}&ano={{ ano_proximo }}" class="btn btn-outline-secondary btn-sm">
             Próximo <i class="fas fa-chevron-right"></i>
         </a>

@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     GrupoListView, GrupoCreateView, GrupoUpdateView, GrupoDeleteView, GrupoDetailView,
-    ContaPagarCreateView, ContaPagarUpdateView, ContaPagarDeleteView
+    ContaPagarCreateView, ContaPagarUpdateView, ContaPagarDeleteView,
+    exportar_pdf, exportar_excel
 )
 from .views_auth import CustomLoginView, RegisterView, logout_view
 
@@ -25,4 +26,8 @@ urlpatterns = [
     # Editar/Excluir conta (já tem o ID da conta, não precisa do grupo na URL, mas a view redireciona pro grupo)
     path('conta/<int:pk>/editar/', ContaPagarUpdateView.as_view(), name='contapagar-update'),
     path('conta/<int:pk>/excluir/', ContaPagarDeleteView.as_view(), name='contapagar-delete'),
+    
+    # Exportação PDF / Excel
+    path('grupo/<int:pk>/exportar/pdf/', exportar_pdf, name='exportar-pdf'),
+    path('grupo/<int:pk>/exportar/excel/', exportar_excel, name='exportar-excel'),
 ]

@@ -192,3 +192,257 @@ class ContaPagarDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('grupo-detail', kwargs={'pk': self.object.grupo.pk})
+
+
+# --- EXPORTAÇÃO PDF / EXCEL ---
+
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from io import BytesIO
+
+# PDF
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+
+# Excel
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
+MESES_PT = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+
+
+@login_required
+def exportar_pdf(request, pk):
+    """Exporta o resumo mensal de um grupo em formato PDF."""
+    grupo = get_object_or_404(Grupo, pk=pk, usuario=request.user)
+    
+    hoje = date.today()
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+    
+    contas = ContaPagar.objects.filter(
+        grupo=grupo,
+        data_vencimento__month=mes,
+        data_vencimento__year=ano
+    ).order_by('data_vencimento')
+    
+    # Totais
+    total_previsto = contas.aggregate(Sum('valor'))['valor__sum'] or 0
+    total_pago = contas.filter(pago=True).aggregate(Sum('valor'))['valor__sum'] or 0
+    total_pendente = total_previsto - total_pago
+    
+    # Criar PDF
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, 
+                           leftMargin=2*cm, rightMargin=2*cm,
+                           topMargin=2*cm, bottomMargin=2*cm)
+    
+    elements = []
+    styles = getSampleStyleSheet()
+    
+    # Título
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        textColor=colors.HexColor('#0d6efd'),
+        spaceAfter=6
+    )
+    elements.append(Paragraph(f"{grupo.nome}", title_style))
+    
+    # Subtítulo (mês/ano)
+    subtitle_style = ParagraphStyle(
+        'CustomSubtitle',
+        parent=styles['Normal'],
+        fontSize=12,
+        textColor=colors.grey,
+        spaceAfter=20
+    )
+    elements.append(Paragraph(f"Resumo de {MESES_PT[mes]} de {ano}", subtitle_style))
+    
+    # Resumo financeiro
+    resumo_data = [
+        ['Total Previsto', 'Total Pago', 'Pendente'],
+        [f'R$ {total_previsto:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.'),
+         f'R$ {total_pago:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.'),
+         f'R$ {total_pendente:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')]
+    ]
+    
+    resumo_table = Table(resumo_data, colWidths=[5.5*cm, 5.5*cm, 5.5*cm])
+    resumo_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, 0), colors.HexColor('#0d6efd')),
+        ('BACKGROUND', (1, 0), (1, 0), colors.HexColor('#198754')),
+        ('BACKGROUND', (2, 0), (2, 0), colors.HexColor('#ffc107')),
+        ('TEXTCOLOR', (0, 0), (1, 0), colors.white),
+        ('TEXTCOLOR', (2, 0), (2, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('FONTSIZE', (0, 1), (-1, 1), 12),
+        ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+    ]))
+    elements.append(resumo_table)
+    elements.append(Spacer(1, 20))
+    
+    # Tabela de contas
+    if contas.exists():
+        elements.append(Paragraph("Detalhamento das Contas", styles['Heading2']))
+        elements.append(Spacer(1, 10))
+        
+        table_data = [['Status', 'Vencimento', 'Descrição', 'Valor']]
+        
+        for conta in contas:
+            status = '✓ Pago' if conta.pago else '○ Pendente'
+            vencimento = conta.data_vencimento.strftime('%d/%m/%Y')
+            valor = f'R$ {conta.valor:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
+            table_data.append([status, vencimento, conta.descricao, valor])
+        
+        contas_table = Table(table_data, colWidths=[2.5*cm, 3*cm, 8*cm, 3*cm])
+        contas_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#343a40')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('ALIGN', (0, 1), (1, -1), 'CENTER'),
+            ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+            ('TOPPADDING', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+            ('TOPPADDING', (0, 1), (-1, -1), 6),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8f9fa')]),
+        ]))
+        elements.append(contas_table)
+    else:
+        elements.append(Paragraph("Nenhuma conta cadastrada para este mês.", styles['Normal']))
+    
+    doc.build(elements)
+    
+    # Response
+    buffer.seek(0)
+    filename = f"resumo_{grupo.nome.lower().replace(' ', '_')}_{MESES_PT[mes].lower()}_{ano}.pdf"
+    
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@login_required
+def exportar_excel(request, pk):
+    """Exporta o resumo mensal de um grupo em formato Excel."""
+    grupo = get_object_or_404(Grupo, pk=pk, usuario=request.user)
+    
+    hoje = date.today()
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+    
+    contas = ContaPagar.objects.filter(
+        grupo=grupo,
+        data_vencimento__month=mes,
+        data_vencimento__year=ano
+    ).order_by('data_vencimento')
+    
+    # Totais
+    total_previsto = contas.aggregate(Sum('valor'))['valor__sum'] or 0
+    total_pago = contas.filter(pago=True).aggregate(Sum('valor'))['valor__sum'] or 0
+    total_pendente = total_previsto - total_pago
+    
+    # Criar Workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = f"{MESES_PT[mes]} {ano}"
+    
+    # Estilos
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_fill = PatternFill(start_color="0d6efd", end_color="0d6efd", fill_type="solid")
+    success_fill = PatternFill(start_color="198754", end_color="198754", fill_type="solid")
+    warning_fill = PatternFill(start_color="ffc107", end_color="ffc107", fill_type="solid")
+    table_header_fill = PatternFill(start_color="343a40", end_color="343a40", fill_type="solid")
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    # Título
+    ws.merge_cells('A1:D1')
+    ws['A1'] = f"{grupo.nome} - Resumo de {MESES_PT[mes]} de {ano}"
+    ws['A1'].font = Font(bold=True, size=16, color="0d6efd")
+    ws['A1'].alignment = Alignment(horizontal='center')
+    
+    # Resumo 
+    ws['A3'] = "Total Previsto"
+    ws['B3'] = "Total Pago"
+    ws['C3'] = "Pendente"
+    
+    for col, fill in [('A', header_fill), ('B', success_fill), ('C', warning_fill)]:
+        ws[f'{col}3'].fill = fill
+        ws[f'{col}3'].font = Font(bold=True, color="FFFFFF" if col != 'C' else "000000")
+        ws[f'{col}3'].alignment = Alignment(horizontal='center')
+        ws[f'{col}3'].border = thin_border
+    
+    ws['A4'] = total_previsto
+    ws['B4'] = total_pago
+    ws['C4'] = total_pendente
+    
+    for col in ['A', 'B', 'C']:
+        ws[f'{col}4'].number_format = 'R$ #,##0.00'
+        ws[f'{col}4'].font = Font(bold=True, size=12)
+        ws[f'{col}4'].alignment = Alignment(horizontal='center')
+        ws[f'{col}4'].border = thin_border
+    
+    # Tabela de contas
+    ws['A6'] = "Status"
+    ws['B6'] = "Vencimento"
+    ws['C6'] = "Descrição"
+    ws['D6'] = "Valor"
+    
+    for col in ['A', 'B', 'C', 'D']:
+        ws[f'{col}6'].fill = table_header_fill
+        ws[f'{col}6'].font = header_font
+        ws[f'{col}6'].alignment = Alignment(horizontal='center')
+        ws[f'{col}6'].border = thin_border
+    
+    row = 7
+    for conta in contas:
+        ws[f'A{row}'] = "✓ Pago" if conta.pago else "○ Pendente"
+        ws[f'B{row}'] = conta.data_vencimento.strftime('%d/%m/%Y')
+        ws[f'C{row}'] = conta.descricao
+        ws[f'D{row}'] = conta.valor
+        ws[f'D{row}'].number_format = 'R$ #,##0.00'
+        
+        for col in ['A', 'B', 'C', 'D']:
+            ws[f'{col}{row}'].border = thin_border
+            ws[f'{col}{row}'].alignment = Alignment(horizontal='center' if col in ['A', 'B'] else 'left')
+        
+        ws[f'D{row}'].alignment = Alignment(horizontal='right')
+        row += 1
+    
+    # Ajustar largura das colunas
+    ws.column_dimensions['A'].width = 15
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 40
+    ws.column_dimensions['D'].width = 18
+    
+    # Response
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    filename = f"resumo_{grupo.nome.lower().replace(' ', '_')}_{MESES_PT[mes].lower()}_{ano}.xlsx"
+    
+    response = HttpResponse(
+        buffer, 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
