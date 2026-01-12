@@ -20,7 +20,7 @@ Ideal para quem quer separar as contas pessoais, da casa, ou de dependentes em u
 - **Python 3**: Linguagem base.
 - **Django 5+**: Framework web robusto.
 - **Bootstrap 5**: Estilização responsiva e moderna.
-- **SQLite**: Banco de dados leve e integrado (padrão).
+- **PostgreSQL**: SGBD avançado e escalável, utilizado para o ambiente de produção.
 - **HTML5/CSS3**: Estrutura e layout.
 
 ## 🚀 Como Rodar o Projeto
