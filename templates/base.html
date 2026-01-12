@@ -270,6 +270,93 @@
         box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
         transition: box-shadow 0.3s ease;
       }
+      
+      /* === CARDS COLORIDOS - Preservar cores em ambos os modos === */
+      /* Light Mode - Cards coloridos */
+      [data-bs-theme="light"] .card.bg-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="light"] .card.bg-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="light"] .card.bg-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="light"] .card.bg-primary .card-header,
+      [data-bs-theme="light"] .card.bg-success .card-header {
+        background: rgba(0, 0, 0, 0.1) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff;
+      }
+      
+      [data-bs-theme="light"] .card.bg-warning .card-header {
+        background: rgba(0, 0, 0, 0.1) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15) !important;
+        color: #1a1a2e;
+      }
+      
+      [data-bs-theme="light"] .card.bg-primary .card-body,
+      [data-bs-theme="light"] .card.bg-success .card-body {
+        color: #ffffff;
+      }
+      
+      [data-bs-theme="light"] .card.bg-warning .card-body {
+        color: #1a1a2e;
+      }
+      
+      /* Dark Mode - Cards coloridos */
+      [data-bs-theme="dark"] .card.bg-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-success {
+        background: linear-gradient(135deg, #00b894 0%, #00cec9 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-warning {
+        background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%) !important;
+        border: none !important;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-primary .card-header,
+      [data-bs-theme="dark"] .card.bg-success .card-header {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-warning .card-header {
+        background: rgba(0, 0, 0, 0.15) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2) !important;
+        color: #1a1a2e;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-primary .card-body,
+      [data-bs-theme="dark"] .card.bg-success .card-body {
+        color: #ffffff;
+      }
+      
+      [data-bs-theme="dark"] .card.bg-warning .card-body {
+        color: #1a1a2e;
+      }
+      
+      /* Garantir que o texto nos cards coloridos seja sempre visível */
+      .card.bg-primary .card-title,
+      .card.bg-success .card-title {
+        color: #ffffff !important;
+      }
+      
+      .card.bg-warning .card-title {
+        color: #1a1a2e !important;
+      }
     </style>
     <!-- Theme Script (runs before page render to prevent flash) -->
     <script>
