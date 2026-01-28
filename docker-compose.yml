@@ -29,6 +29,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     
+    # PORTA: Expõe o PostgreSQL para acesso externo (DBeaver, pgAdmin, etc)
+    # localhost:5432 -> container:5432
+    ports:
+      - "5432:5432"
+    
     # HEALTHCHECK: Verifica se o banco está pronto
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
