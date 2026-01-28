@@ -10,9 +10,11 @@ venv/
 .env
 .venv/
 
-# Variáveis de ambiente e segredos
+# Variáveis de ambiente e segredos (NUNCA versionar!)
 .env
 .env.local
+.env.production
+# OBS: .env.example PODE ser versionado (é só o template)
 
 # Banco de dados (se for usar SQLite local)
 db.sqlite3
@@ -26,3 +28,12 @@ db.sqlite3
 Thumbs.db
 
 implementação.txt
+
+# Arquivos estáticos coletados (gerados pelo collectstatic)
+staticfiles/
+
+# Docker (opcional - alguns preferem versionar)
+# Descomente as linhas abaixo se NÃO quiser versionar os arquivos Docker
+# Dockerfile
+# docker-compose.yml
+# .dockerignore

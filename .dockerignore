@@ -1,0 +1,51 @@
+# ============================================
+# .DOCKERIGNORE
+# ============================================
+# Similar ao .gitignore, mas para o Docker.
+# Arquivos listados aqui NÃO são copiados para a imagem.
+# Isso deixa o build mais rápido e a imagem menor.
+
+# Ambiente virtual Python (tem suas próprias dependências no container)
+venv/
+.venv/
+env/
+
+# Arquivos compilados Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Git (não precisa no container)
+.git/
+.gitignore
+
+# Variáveis de ambiente locais (usamos as do docker-compose)
+.env
+
+# Banco SQLite local (usamos PostgreSQL no Docker)
+db.sqlite3
+*.sqlite3
+
+# Logs
+*.log
+
+# IDE e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos estáticos coletados (serão gerados no build)
+staticfiles/
+
+# Arquivos de teste e documentação
+*.md
+!README.md
+tests/
+htmlcov/
+.coverage

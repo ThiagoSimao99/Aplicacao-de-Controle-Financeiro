@@ -1,0 +1,76 @@
+# ============================================
+# DOCKER COMPOSE - Orquestração de Containers
+# ============================================
+# Este arquivo define como rodar MÚLTIPLOS containers juntos.
+# Aqui temos 2 serviços: banco de dados (db) e aplicação web (web)
+#
+# SEGURANÇA: As credenciais são lidas do arquivo .env
+# Nunca commite o .env para o repositório!
+
+services:
+  # ------------------------------------------
+  # SERVIÇO: BANCO DE DADOS POSTGRESQL
+  # ------------------------------------------
+  db:
+    # Usa a imagem oficial do PostgreSQL versão 16
+    image: postgres:16
+    
+    # Nome do container (facilita identificação)
+    container_name: financeiro_db
+    
+    # Variáveis de ambiente lidas do arquivo .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    
+    # VOLUMES: Persistência de dados
+    # Sem isso, ao parar o container, TODOS os dados seriam perdidos!
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    # HEALTHCHECK: Verifica se o banco está pronto
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ------------------------------------------
+  # SERVIÇO: APLICAÇÃO WEB DJANGO
+  # ------------------------------------------
+  web:
+    # Constrói a imagem a partir do Dockerfile na pasta atual
+    build: .
+    
+    # Nome do container
+    container_name: financeiro_web
+    
+    # MAPEAMENTO DE PORTAS
+    ports:
+      - "8000:8000"
+    
+    # Variáveis de ambiente lidas do arquivo .env
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+    
+    # DEPENDS_ON: Define ordem de inicialização
+    depends_on:
+      db:
+        condition: service_healthy
+    
+    # COMANDO: Executado quando o container inicia
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
+
+# ------------------------------------------
+# VOLUMES NOMEADOS
+# ------------------------------------------
+volumes:
+  postgres_data:
