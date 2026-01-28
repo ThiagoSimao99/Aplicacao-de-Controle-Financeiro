@@ -18,9 +18,9 @@ class ContaPagarForm(forms.ModelForm):
             'grupo': forms.Select(attrs={'class': 'form-select'}),
             'descricao': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Aluguel'}),
             'valor': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'data_vencimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'data_vencimento': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
             'pago': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'data_pagamento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'data_pagamento': forms.DateInput(format='%Y-%m-%d', attrs={'class': 'form-control', 'type': 'date'}),
         }
 
 
